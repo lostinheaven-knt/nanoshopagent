@@ -38,15 +38,19 @@ def _print_step(evt: dict) -> None:
     if t in ("thinking", "final"):
         content = (evt.get("content") or "").strip()
         if content:
-            print("\n" + content)
+            print("\n" + content, flush=True)
+        else:
+            # still show a marker so it feels alive
+            if t == "thinking":
+                print("\n【思考】(无)" , flush=True)
     elif t == "tool_call":
         name_zh = evt.get("tool_name_zh") or evt.get("tool_name") or ""
         if name_zh:
-            print(f"\n【工具调用】{name_zh}")
+            print(f"\n【工具调用】{name_zh}", flush=True)
     elif t == "tool_result":
         msg = (evt.get("message") or "").strip()
         if msg:
-            print(f"【执行结果】{msg}")
+            print(f"【执行结果】{msg}", flush=True)
 
 
 def _read_user_message() -> str | None:
