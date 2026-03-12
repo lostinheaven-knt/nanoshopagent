@@ -121,7 +121,11 @@ def main() -> None:
             continue
         # The agent will stream step outputs via on_step.
         # We still call run() to drive the loop, but we do not print the aggregated transcript again.
-        agent.run(q)
+        try:
+            agent.run(q)
+        except KeyboardInterrupt:
+            print("\n[已中断当前请求，回到输入。输入 /quit 退出]")
+            continue
 
 
 if __name__ == "__main__":
