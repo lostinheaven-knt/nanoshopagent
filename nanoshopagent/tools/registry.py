@@ -1,43 +1,29 @@
 from __future__ import annotations
 
-import ast
+import json
 import os
 from typing import Any, Dict
 
 from nanoshopagent.tools.types import ToolDef
 
 
-def _extract_registry_dict() -> Dict[str, Any]:
-    """Load org_tools_registry from the original demo file via AST literal eval.
+def _load_tools_json() -> Dict[str, Any]:
+    """Load tool registry from a JSON file shipped with the repo.
 
-    This avoids executing the original script (which initializes OpenAI client etc.).
-    We only parse and literal-eval the dict literal.
+    This avoids runtime dependency on any external demo script path.
     """
 
-    src_path = os.path.expanduser("~/backup/nano_shop_agent/dpskv32_mtc_demo0211.py")
-    with open(src_path, "r", encoding="utf-8") as f:
-        src = f.read()
+    here = os.path.abspath(os.path.dirname(__file__))
+    data_path = os.path.join(here, "data", "tools_0211.json")
 
-    mod = ast.parse(src)
-    reg_node = None
-    for node in mod.body:
-        if isinstance(node, ast.Assign) and any(
-            isinstance(t, ast.Name) and t.id == "org_tools_registry" for t in node.targets
-        ):
-            reg_node = node.value
-            break
-
-    if reg_node is None:
-        raise RuntimeError("org_tools_registry not found in demo script")
-
-    # org_tools_registry is a pure dict literal in this repo, safe for literal_eval
-    return ast.literal_eval(reg_node)
+    with open(data_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def load_org_tools_registry() -> Dict[str, ToolDef]:
-    """Load full tool registry (29 tools) from 0211 demo."""
+    """Load full tool registry from tools/data/tools_0211.json."""
 
-    raw = _extract_registry_dict()
+    raw = _load_tools_json()
     out: Dict[str, ToolDef] = {}
 
     for name, tool_def in raw.items():

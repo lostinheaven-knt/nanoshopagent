@@ -1,0 +1,1250 @@
+{
+  "daily_report": {
+    "type": "function",
+    "function": {
+      "name": "daily_report",
+      "description": "生成店铺每日运营数据报告，包含访客量、转化率、GMV等核心指标",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "date": {
+            "type": "string",
+            "description": "报告日期 YYYY-mm-dd"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "指标列表如 ['uv','pv','gmv','conversion_rate']"
+          }
+        },
+        "required": [
+          "store_id",
+          "date"
+        ]
+      }
+    }
+  },
+  "data_query": {
+    "type": "function",
+    "function": {
+      "name": "data_query",
+      "description": "自定义数据查询，支持按时间范围、维度、指标进行灵活的数据检索与分析",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "query_type": {
+            "type": "string",
+            "description": "查询类型：sales/traffic/product/customer"
+          },
+          "date_range": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "description": "日期范围"
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "分组维度"
+          },
+          "filters": {
+            "type": "object",
+            "description": "筛选条件"
+          }
+        },
+        "required": [
+          "store_id",
+          "query_type",
+          "date_range"
+        ]
+      }
+    }
+  },
+  "onboarding_build": {
+    "type": "function",
+    "function": {
+      "name": "onboarding_build",
+      "description": "店铺初始化搭建，根据行业模板和用户偏好快速生成店铺基础结构",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "template_type": {
+            "type": "string",
+            "description": "模板类型：fashion/electronics/food/general"
+          },
+          "store_name": {
+            "type": "string",
+            "description": "店铺名称"
+          },
+          "brand_color": {
+            "type": "string",
+            "description": "品牌主色调（hex格式）"
+          }
+        },
+        "required": [
+          "store_id",
+          "template_type",
+          "store_name"
+        ]
+      }
+    }
+  },
+  "add_menu": {
+    "type": "function",
+    "function": {
+      "name": "add_menu",
+      "description": "为店铺添加或编辑导航菜单项，支持多级菜单结构",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "menu_items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "菜单项列表，每项包含 title/url/children"
+          },
+          "position": {
+            "type": "string",
+            "description": "菜单位置：header/footer/sidebar"
+          }
+        },
+        "required": [
+          "store_id",
+          "menu_items"
+        ]
+      }
+    }
+  },
+  "page_decoration": {
+    "type": "function",
+    "function": {
+      "name": "page_decoration",
+      "description": "店铺页面装修，可对首页、产品页等进行布局和组件配置",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "page_type": {
+            "type": "string",
+            "description": "页面类型：home/product/collection/about"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "页面区块配置列表"
+          },
+          "theme_settings": {
+            "type": "object",
+            "description": "主题设置（字体、颜色等）"
+          }
+        },
+        "required": [
+          "store_id",
+          "page_type",
+          "sections"
+        ]
+      }
+    }
+  },
+  "generate_blog": {
+    "type": "function",
+    "function": {
+      "name": "generate_blog",
+      "description": "AI生成店铺博客文章，用于SEO优化和内容营销。支持一次生成多篇，通过 items 数组传入多组参数",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "items": {
+            "type": "array",
+            "description": "博客列表，每项包含一篇博客的参数",
+            "items": {
+              "type": "object",
+              "properties": {
+                "topic": {
+                  "type": "string",
+                  "description": "博客主题"
+                },
+                "keywords": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "SEO关键词"
+                },
+                "tone": {
+                  "type": "string",
+                  "description": "文章风格：professional/casual/trendy"
+                },
+                "word_count": {
+                  "type": "integer",
+                  "description": "目标字数"
+                }
+              },
+              "required": [
+                "topic"
+              ]
+            }
+          }
+        },
+        "required": [
+          "store_id",
+          "items"
+        ]
+      }
+    }
+  },
+  "create_domain": {
+    "type": "function",
+    "function": {
+      "name": "create_domain",
+      "description": "为店铺创建自定义域名（平台内域名）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "domain_name": {
+            "type": "string",
+            "description": "期望的域名前缀"
+          }
+        },
+        "required": [
+          "store_id",
+          "domain_name"
+        ]
+      }
+    }
+  },
+  "change_domain": {
+    "type": "function",
+    "function": {
+      "name": "change_domain",
+      "description": "修改店铺的现有域名",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "old_domain": {
+            "type": "string",
+            "description": "旧域名"
+          },
+          "new_domain": {
+            "type": "string",
+            "description": "新域名"
+          }
+        },
+        "required": [
+          "store_id",
+          "old_domain",
+          "new_domain"
+        ]
+      }
+    }
+  },
+  "connect_outer_domain": {
+    "type": "function",
+    "function": {
+      "name": "connect_outer_domain",
+      "description": "绑定外部自有域名到店铺，配置DNS解析",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "external_domain": {
+            "type": "string",
+            "description": "外部域名"
+          },
+          "dns_provider": {
+            "type": "string",
+            "description": "DNS服务商"
+          }
+        },
+        "required": [
+          "store_id",
+          "external_domain"
+        ]
+      }
+    }
+  },
+  "logistics_setup": {
+    "type": "function",
+    "function": {
+      "name": "logistics_setup",
+      "description": "配置店铺物流方案，包括运费模板、配送区域、物流商对接",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "shipping_zones": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "配送区域及运费规则"
+          },
+          "carriers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "物流商列表"
+          },
+          "free_shipping_threshold": {
+            "type": "number",
+            "description": "免运费门槛金额"
+          }
+        },
+        "required": [
+          "store_id",
+          "shipping_zones"
+        ]
+      }
+    }
+  },
+  "payment_setup": {
+    "type": "function",
+    "function": {
+      "name": "payment_setup",
+      "description": "配置店铺支付方式，支持信用卡、PayPal、本地支付等",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "payment_methods": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "支付方式列表"
+          },
+          "currency": {
+            "type": "string",
+            "description": "结算货币"
+          },
+          "api_keys": {
+            "type": "object",
+            "description": "支付网关API密钥"
+          }
+        },
+        "required": [
+          "store_id",
+          "payment_methods",
+          "currency"
+        ]
+      }
+    }
+  },
+  "tax_setup": {
+    "type": "function",
+    "function": {
+      "name": "tax_setup",
+      "description": "配置店铺税费规则，支持按地区、品类设定税率",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "tax_regions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "税区及税率配置"
+          },
+          "tax_inclusive": {
+            "type": "boolean",
+            "description": "价格是否含税"
+          }
+        },
+        "required": [
+          "store_id",
+          "tax_regions"
+        ]
+      }
+    }
+  },
+  "unlock_store": {
+    "type": "function",
+    "function": {
+      "name": "unlock_store",
+      "description": "解锁/发布店铺，使其对外可访问",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "password_protection": {
+            "type": "boolean",
+            "description": "是否保留密码保护"
+          }
+        },
+        "required": [
+          "store_id"
+        ]
+      }
+    }
+  },
+  "connect_social_channel": {
+    "type": "function",
+    "function": {
+      "name": "connect_social_channel",
+      "description": "连接社交媒体销售渠道（Facebook/Instagram/TikTok等）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "channel": {
+            "type": "string",
+            "description": "渠道名：facebook/instagram/tiktok/pinterest"
+          },
+          "auth_token": {
+            "type": "string",
+            "description": "渠道授权token"
+          }
+        },
+        "required": [
+          "store_id",
+          "channel"
+        ]
+      }
+    }
+  },
+  "create_physical_product": {
+    "type": "function",
+    "function": {
+      "name": "create_physical_product",
+      "description": "创建实物商品。支持一次创建多个，通过 items 数组传入多组商品参数",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "items": {
+            "type": "array",
+            "description": "商品列表，每项包含一个商品的完整参数",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "商品标题"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "商品描述"
+                },
+                "price": {
+                  "type": "number",
+                  "description": "价格"
+                },
+                "compare_at_price": {
+                  "type": "number",
+                  "description": "原价（划线价）"
+                },
+                "sku": {
+                  "type": "string",
+                  "description": "SKU编码"
+                },
+                "inventory_quantity": {
+                  "type": "integer",
+                  "description": "库存数量"
+                },
+                "variants": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  },
+                  "description": "规格变体"
+                },
+                "images": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "图片URL列表"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "商品品类"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "标签"
+                },
+                "weight": {
+                  "type": "number",
+                  "description": "重量(g)"
+                }
+              },
+              "required": [
+                "title",
+                "price"
+              ]
+            }
+          }
+        },
+        "required": [
+          "store_id",
+          "items"
+        ]
+      }
+    }
+  },
+  "create_visual_product": {
+    "type": "function",
+    "function": {
+      "name": "create_visual_product",
+      "description": "创建虚拟/数字商品（如电子书、课程、会员卡、软件许可等）。支持一次创建多个，通过 items 数组传入多组参数",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "items": {
+            "type": "array",
+            "description": "虚拟商品列表，每项包含一个商品的参数",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "商品标题"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "商品描述"
+                },
+                "price": {
+                  "type": "number",
+                  "description": "价格"
+                },
+                "digital_file_url": {
+                  "type": "string",
+                  "description": "数字文件下载链接"
+                },
+                "license_type": {
+                  "type": "string",
+                  "description": "许可类型：single/unlimited"
+                },
+                "access_duration_days": {
+                  "type": "integer",
+                  "description": "有效期（天）"
+                }
+              },
+              "required": [
+                "title",
+                "price"
+              ]
+            }
+          }
+        },
+        "required": [
+          "store_id",
+          "items"
+        ]
+      }
+    }
+  },
+  "create_dropshipping_product": {
+    "type": "function",
+    "function": {
+      "name": "create_dropshipping_product",
+      "description": "创建代发(dropshipping)商品，从供应商导入并设置利润率。支持一次创建多个，通过 items 数组传入多组参数",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "items": {
+            "type": "array",
+            "description": "代发商品列表，每项包含一个商品的参数",
+            "items": {
+              "type": "object",
+              "properties": {
+                "supplier_product_id": {
+                  "type": "string",
+                  "description": "供应商商品ID"
+                },
+                "supplier": {
+                  "type": "string",
+                  "description": "供应商平台：aliexpress/cjdropshipping/spocket"
+                },
+                "markup_percentage": {
+                  "type": "number",
+                  "description": "加价比例(%)"
+                },
+                "custom_title": {
+                  "type": "string",
+                  "description": "自定义标题"
+                },
+                "custom_description": {
+                  "type": "string",
+                  "description": "自定义描述"
+                }
+              },
+              "required": [
+                "supplier_product_id",
+                "supplier"
+              ]
+            }
+          }
+        },
+        "required": [
+          "store_id",
+          "items"
+        ]
+      }
+    }
+  },
+  "create_collection": {
+    "type": "function",
+    "function": {
+      "name": "create_collection",
+      "description": "创建商品集合/分类，支持手动选品或自动规则。支持一次创建多个，通过 items 数组传入多组参数",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "items": {
+            "type": "array",
+            "description": "集合列表，每项包含一个集合的参数",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "集合名称"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "集合描述"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "类型：manual/automatic"
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  },
+                  "description": "自动规则（当 type=automatic）"
+                },
+                "product_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "手动选品ID列表（当 type=manual）"
+                },
+                "image_url": {
+                  "type": "string",
+                  "description": "集合封面图"
+                }
+              },
+              "required": [
+                "title"
+              ]
+            }
+          }
+        },
+        "required": [
+          "store_id",
+          "items"
+        ]
+      }
+    }
+  },
+  "update_collection": {
+    "type": "function",
+    "function": {
+      "name": "update_collection",
+      "description": "更新商品集合，支持添加或移除集合中的商品、修改集合信息",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "collection_id": {
+            "type": "string",
+            "description": "集合ID"
+          },
+          "action": {
+            "type": "string",
+            "description": "操作类型：add_products/remove_products/update_info"
+          },
+          "product_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "要添加或移除的商品ID列表（当 action 为 add_products/remove_products 时）"
+          },
+          "title": {
+            "type": "string",
+            "description": "新的集合名称（当 action=update_info）"
+          },
+          "description": {
+            "type": "string",
+            "description": "新的集合描述（当 action=update_info）"
+          },
+          "image_url": {
+            "type": "string",
+            "description": "新的集合封面图（当 action=update_info）"
+          }
+        },
+        "required": [
+          "store_id",
+          "collection_id",
+          "action"
+        ]
+      }
+    }
+  },
+  "create_order_discount": {
+    "type": "function",
+    "function": {
+      "name": "create_order_discount",
+      "description": "创建订单级折扣活动（满减、满折等）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "discount_name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "discount_type": {
+            "type": "string",
+            "description": "折扣类型：percentage/fixed_amount/free_shipping"
+          },
+          "discount_value": {
+            "type": "number",
+            "description": "折扣值"
+          },
+          "minimum_order_amount": {
+            "type": "number",
+            "description": "最低订单金额"
+          },
+          "start_date": {
+            "type": "string",
+            "description": "开始日期"
+          },
+          "end_date": {
+            "type": "string",
+            "description": "结束日期"
+          },
+          "usage_limit": {
+            "type": "integer",
+            "description": "使用次数限制"
+          }
+        },
+        "required": [
+          "store_id",
+          "discount_name",
+          "discount_type",
+          "discount_value"
+        ]
+      }
+    }
+  },
+  "create_product_discount": {
+    "type": "function",
+    "function": {
+      "name": "create_product_discount",
+      "description": "创建商品级折扣（指定商品打折、买赠等）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "discount_name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "product_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "参与商品ID"
+          },
+          "discount_type": {
+            "type": "string",
+            "description": "折扣类型：percentage/fixed_amount/buy_x_get_y"
+          },
+          "discount_value": {
+            "type": "number",
+            "description": "折扣值"
+          },
+          "start_date": {
+            "type": "string",
+            "description": "开始日期"
+          },
+          "end_date": {
+            "type": "string",
+            "description": "结束日期"
+          }
+        },
+        "required": [
+          "store_id",
+          "discount_name",
+          "product_ids",
+          "discount_type",
+          "discount_value"
+        ]
+      }
+    }
+  },
+  "post_social_media": {
+    "type": "function",
+    "function": {
+      "name": "post_social_media",
+      "description": "发布社交媒体帖子，支持多平台同步发布",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "发布平台：facebook/instagram/tiktok/twitter"
+          },
+          "content": {
+            "type": "string",
+            "description": "帖子内容"
+          },
+          "media_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "图片/视频URL"
+          },
+          "schedule_time": {
+            "type": "string",
+            "description": "定时发布时间（空则立即发布）"
+          },
+          "product_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "关联商品ID"
+          }
+        },
+        "required": [
+          "store_id",
+          "platforms",
+          "content"
+        ]
+      }
+    }
+  },
+  "create_EDM": {
+    "type": "function",
+    "function": {
+      "name": "create_EDM",
+      "description": "创建EDM邮件营销活动，支持模板选择和受众定向",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "campaign_name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "subject": {
+            "type": "string",
+            "description": "邮件主题"
+          },
+          "template": {
+            "type": "string",
+            "description": "邮件模板类型：promotion/newsletter/abandoned_cart/welcome"
+          },
+          "audience_segment": {
+            "type": "string",
+            "description": "受众分群：all/new_customers/repeat_buyers/inactive"
+          },
+          "content": {
+            "type": "string",
+            "description": "邮件正文内容"
+          },
+          "product_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "推荐商品ID"
+          },
+          "schedule_time": {
+            "type": "string",
+            "description": "发送时间"
+          }
+        },
+        "required": [
+          "store_id",
+          "campaign_name",
+          "subject",
+          "template"
+        ]
+      }
+    }
+  },
+  "create_sms": {
+    "type": "function",
+    "function": {
+      "name": "create_sms",
+      "description": "创建SMS短信营销活动，支持受众筛选和定时发送",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "campaign_name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "message": {
+            "type": "string",
+            "description": "短信内容（注意字数限制）"
+          },
+          "audience_segment": {
+            "type": "string",
+            "description": "受众分群"
+          },
+          "include_link": {
+            "type": "boolean",
+            "description": "是否包含店铺链接"
+          },
+          "schedule_time": {
+            "type": "string",
+            "description": "发送时间"
+          }
+        },
+        "required": [
+          "store_id",
+          "campaign_name",
+          "message"
+        ]
+      }
+    }
+  },
+  "search_order": {
+    "type": "function",
+    "function": {
+      "name": "search_order",
+      "description": "搜索和查询订单，支持按订单号、客户、状态、日期范围等条件进行检索",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "order_number": {
+            "type": "string",
+            "description": "订单号（精确匹配）"
+          },
+          "customer_email": {
+            "type": "string",
+            "description": "客户邮箱"
+          },
+          "status": {
+            "type": "string",
+            "description": "订单状态：pending/paid/shipped/delivered/cancelled/refunded"
+          },
+          "date_range": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "description": "下单日期范围"
+          },
+          "min_amount": {
+            "type": "number",
+            "description": "最低订单金额"
+          },
+          "max_amount": {
+            "type": "number",
+            "description": "最高订单金额"
+          },
+          "page": {
+            "type": "integer",
+            "description": "分页页码"
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "每页条数"
+          }
+        },
+        "required": [
+          "store_id"
+        ]
+      }
+    }
+  },
+  "update_order": {
+    "type": "function",
+    "function": {
+      "name": "update_order",
+      "description": "更新订单信息，支持修改状态、添加备注、更新物流信息、处理退款等操作",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "order_id": {
+            "type": "string",
+            "description": "订单ID"
+          },
+          "action": {
+            "type": "string",
+            "description": "操作类型：update_status/add_note/update_shipping/refund/cancel"
+          },
+          "new_status": {
+            "type": "string",
+            "description": "新状态（当 action=update_status）"
+          },
+          "note": {
+            "type": "string",
+            "description": "备注内容（当 action=add_note）"
+          },
+          "tracking_number": {
+            "type": "string",
+            "description": "物流单号（当 action=update_shipping）"
+          },
+          "carrier": {
+            "type": "string",
+            "description": "物流商（当 action=update_shipping）"
+          },
+          "refund_amount": {
+            "type": "number",
+            "description": "退款金额（当 action=refund）"
+          },
+          "refund_reason": {
+            "type": "string",
+            "description": "退款原因（当 action=refund）"
+          }
+        },
+        "required": [
+          "store_id",
+          "order_id",
+          "action"
+        ]
+      }
+    }
+  },
+  "create_customer_segment": {
+    "type": "function",
+    "function": {
+      "name": "create_customer_segment",
+      "description": "创建客户分群，根据消费行为、注册时间、地域等条件划分用户群体，用于精准营销",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "segment_name": {
+            "type": "string",
+            "description": "分群名称"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "分群条件列表，每个条件含 field/operator/value"
+          },
+          "logic": {
+            "type": "string",
+            "description": "条件逻辑：and/or"
+          },
+          "description": {
+            "type": "string",
+            "description": "分群描述"
+          }
+        },
+        "required": [
+          "store_id",
+          "segment_name",
+          "conditions"
+        ]
+      }
+    }
+  },
+  "set_vip_level": {
+    "type": "function",
+    "function": {
+      "name": "set_vip_level",
+      "description": "设置客户VIP等级，支持手动指定或根据消费金额自动升降级",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "customer_id": {
+            "type": "string",
+            "description": "客户ID"
+          },
+          "vip_level": {
+            "type": "string",
+            "description": "VIP等级：bronze/silver/gold/platinum/diamond"
+          },
+          "reason": {
+            "type": "string",
+            "description": "调整原因"
+          },
+          "auto_rules": {
+            "type": "object",
+            "description": "自动升降级规则（批量设置时使用）"
+          }
+        },
+        "required": [
+          "store_id",
+          "customer_id",
+          "vip_level"
+        ]
+      }
+    }
+  },
+  "update_customer_points": {
+    "type": "function",
+    "function": {
+      "name": "update_customer_points",
+      "description": "更新客户积分，支持积分增加、扣减、兑换操作",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "店铺ID"
+          },
+          "customer_id": {
+            "type": "string",
+            "description": "客户ID"
+          },
+          "action": {
+            "type": "string",
+            "description": "操作类型：add/deduct/redeem"
+          },
+          "points": {
+            "type": "integer",
+            "description": "积分数量"
+          },
+          "reason": {
+            "type": "string",
+            "description": "操作原因：purchase/promotion/manual/redeem_coupon"
+          },
+          "reference_order_id": {
+            "type": "string",
+            "description": "关联订单ID（如因购买获得积分）"
+          }
+        },
+        "required": [
+          "store_id",
+          "customer_id",
+          "action",
+          "points"
+        ]
+      }
+    }
+  }
+}
