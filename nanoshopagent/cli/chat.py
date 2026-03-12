@@ -28,6 +28,27 @@ from nanoshopagent.tools.registry import load_org_tools_registry
 from nanoshopagent.utils.env_load import load_env_file
 
 
+def _print_step(evt: dict) -> None:
+    """Print step events emitted by NanoShopAgent.
+
+    Keeps the same user-facing four-part style, but streams as soon as each step finishes.
+    """
+
+    t = evt.get("type")
+    if t in ("thinking", "final"):
+        content = (evt.get("content") or "").strip()
+        if content:
+            print("\n" + content)
+    elif t == "tool_call":
+        name_zh = evt.get("tool_name_zh") or evt.get("tool_name") or ""
+        if name_zh:
+            print(f"\n【工具调用】{name_zh}")
+    elif t == "tool_result":
+        msg = (evt.get("message") or "").strip()
+        if msg:
+            print(f"【执行结果】{msg}")
+
+
 def _read_user_message() -> str | None:
     """Read either a single-line or multi-line user message.
 
@@ -86,6 +107,7 @@ def main() -> None:
         selector=selector,
         executor=executor,
         cfg=cfg,
+        on_step=_print_step,
     )
 
     print("NanoShopAgent interactive. /quit to exit")
@@ -97,8 +119,9 @@ def main() -> None:
             break
         if not q:
             continue
-        out = agent.run(q)
-        print(out)
+        # The agent will stream step outputs via on_step.
+        # We still call run() to drive the loop, but we do not print the aggregated transcript again.
+        agent.run(q)
 
 
 if __name__ == "__main__":

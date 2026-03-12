@@ -72,6 +72,7 @@ class NanoShopAgent:
         cfg: Optional[LLMConfig] = None,
         run_cfg: Optional[RunConfig] = None,
         show_thinking_to_user: bool = True,
+        on_step: Optional[callable] = None,
     ):
         self.tool_defs = tool_defs
         self.selector = selector
@@ -80,6 +81,16 @@ class NanoShopAgent:
         self.client = make_client(self.cfg)
         self.run_cfg = run_cfg or RunConfig()
         self.show_thinking_to_user = show_thinking_to_user
+        self.on_step = on_step
+
+    def _emit(self, evt: Dict[str, Any]) -> None:
+        if self.on_step is None:
+            return
+        try:
+            self.on_step(evt)
+        except Exception:
+            # Never let UI callbacks break the agent loop
+            return
 
     def run(self, user_query: str) -> str:
         selected = self.selector.select(user_query)
@@ -117,14 +128,18 @@ class NanoShopAgent:
             # Capture and show reasoning (sanitized) without extra LLM calls
             if self.show_thinking_to_user:
                 rc = getattr(msg, "reasoning_content", "")
-                user_chunks.append("【思考】\n" + sanitize_reasoning(rc or ""))
+                chunk = "【思考】\n" + sanitize_reasoning(rc or "")
+                user_chunks.append(chunk)
+                self._emit({"type": "thinking", "step": state.step, "content": chunk})
 
             messages.append(_assistant_msg_with_tool_calls_and_thinking(msg))
 
             tool_calls = getattr(msg, "tool_calls", None)
             if not tool_calls:
                 final = sanitize_text(msg.content or "")
-                user_chunks.append("【回复】\n" + final)
+                chunk = "【回复】\n" + final
+                user_chunks.append(chunk)
+                self._emit({"type": "final", "step": state.step, "content": chunk})
                 return "\n\n".join([c for c in user_chunks if c.strip()])
 
             # For each tool call: show tool name only, execute, then show tool message
@@ -132,6 +147,7 @@ class NanoShopAgent:
                 state.tool_calls += 1
                 name = tc.function.name
                 user_chunks.append(f"【工具调用】调用了：{tool_display_name(name)}（已脱敏）")
+                self._emit({"type": "tool_call", "step": state.step, "tool_name": name, "tool_name_zh": tool_display_name(name)})
 
                 if state.tool_calls > self.run_cfg.max_tool_calls:
                     messages.append(
@@ -160,6 +176,7 @@ class NanoShopAgent:
                     }
                     result = ToolResult.ok(tc.id, tool_payload)
                     user_chunks.append("【执行结果】" + sanitize_text(tool_payload.get("message", "")))
+                    self._emit({"type": "tool_result", "step": state.step, "tool_name": name, "message": sanitize_text(tool_payload.get("message", ""))})
                     messages.append(
                         {
                             "role": "tool",
@@ -175,6 +192,7 @@ class NanoShopAgent:
                     if isinstance(safe_data, dict):
                         msg_text = safe_data.get("message", "") or ""
                     user_chunks.append("【执行结果】" + sanitize_text(msg_text))
+                    self._emit({"type": "tool_result", "step": state.step, "tool_name": name, "message": sanitize_text(msg_text)})
                     messages.append(
                         {
                             "role": "tool",
