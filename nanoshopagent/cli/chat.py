@@ -106,16 +106,21 @@ def main() -> None:
 
     all_tool_defs = {**tools, "select_tools_by_llm": select_tools_tool_def()}
 
+    keep_turns = int(os.environ.get("NANOSHOP_KEEP_LAST_USER_TURNS", "10"))
+
     agent = NanoShopAgent(
         tool_defs=all_tool_defs,
         selector=selector,
         executor=executor,
         cfg=cfg,
+        run_cfg=None,  # use defaults
         on_step=_print_step,
     )
+    agent.run_cfg.keep_last_user_turns = keep_turns
 
     print("NanoShopAgent interactive. /quit to exit")
     print("(多行输入：空行提交；或输入 /// 提交)")
+    print(f"(history pruning: keep_last_user_turns={keep_turns})")
 
     while True:
         q = _read_user_message()
@@ -128,7 +133,7 @@ def main() -> None:
         try:
             agent.run(q)
         except KeyboardInterrupt:
-            print("\n[已中断当前请求，回到输入。输入 /quit 退出]")
+            print("\n[已中断当前请求，回到输入。输入 /quit 退出]", flush=True)
             continue
 
 
