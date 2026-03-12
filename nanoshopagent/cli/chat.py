@@ -1,6 +1,19 @@
 from __future__ import annotations
 
+"""CLI entrypoint.
+
+Recommended:
+    python -m nanoshopagent.cli.chat
+
+If you insist on running as a script from this directory (python chat.py), we
+patch sys.path so that `import nanoshopagent` resolves.
+"""
+
 import os
+import sys
+
+# Allow `python chat.py` when cwd is nanoshopagent/cli
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from nanoshopagent.core.agent import NanoShopAgent, select_tools_tool_def
 from nanoshopagent.core.llm_client import LLMConfig
