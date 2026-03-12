@@ -13,6 +13,34 @@ from nanoshopagent.utils.redact_text import sanitize_text
 from nanoshopagent.utils.sanitize_reasoning import sanitize_reasoning, tool_display_name
 
 
+def _prune_messages_keep_last_user_turns(
+    messages: List[Dict[str, Any]], *, keep_last_user_turns: int
+) -> List[Dict[str, Any]]:
+    """Keep system messages, and keep last N user turns with their following assistant/tool messages.
+
+    This mimics the 0211-style pruning: keep multiple turns, but do not keep sub-turn reasoning as history
+    (reasoning_content is already dropped by _assistant_msg_with_tool_calls_and_thinking).
+    """
+
+    if keep_last_user_turns <= 0:
+        # keep only system
+        return [m for m in messages if m.get("role") == "system"]
+
+    sys_msgs = [m for m in messages if m.get("role") == "system"]
+
+    # find indices of user messages
+    user_idxs = [i for i, m in enumerate(messages) if m.get("role") == "user"]
+    if not user_idxs:
+        return sys_msgs
+
+    keep_user_idxs = user_idxs[-keep_last_user_turns:]
+    start = keep_user_idxs[0]
+    kept = messages[start:]
+
+    # ensure system prompts stay first
+    return sys_msgs + [m for m in kept if m.get("role") != "system"]
+
+
 SELECT_TOOL_NAME = "select_tools_by_llm"
 
 
@@ -36,18 +64,28 @@ def select_tools_tool_def() -> ToolDef:
 
 
 def _assistant_msg_with_tool_calls_and_thinking(msg: Any) -> Dict[str, Any]:
-    reasoning = getattr(msg, "reasoning_content", "")
-    if reasoning is None:
-        reasoning = ""
+    """Serialize assistant message back into `messages`.
+
+    IMPORTANT: We intentionally do NOT persist `reasoning_content` into history.
+    DeepSeek requires reasoning_content to be present when a message has tool_calls,
+    but the next request only needs it for those specific assistant messages.
+
+    Keeping reasoning for every sub-turn bloats context and hurts caching/perf.
+    We still show reasoning to the user, but we don't keep it in `messages`.
+    """
 
     out: Dict[str, Any] = {
         "role": "assistant",
         "content": msg.content or "",
-        "reasoning_content": reasoning,
+        "reasoning_content": "",
     }
 
     tool_calls = getattr(msg, "tool_calls", None)
     if tool_calls:
+        # Only attach reasoning_content if provider produced it; required by DeepSeek protocol.
+        reasoning = getattr(msg, "reasoning_content", "")
+        out["reasoning_content"] = reasoning or ""
+
         out["tool_calls"] = [
             {
                 "id": tc.id,
@@ -202,6 +240,10 @@ class NanoShopAgent:
                     )
 
             state.step += 1
+            # prune history to control context growth (keep multiple turns, drop sub-turn reasoning)
+            messages = _prune_messages_keep_last_user_turns(
+                messages, keep_last_user_turns=self.run_cfg.keep_last_user_turns
+            )
             if state.step >= self.run_cfg.max_steps:
                 messages.append(
                     {

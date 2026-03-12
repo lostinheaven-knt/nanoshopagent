@@ -11,6 +11,8 @@ class RunConfig:
     max_steps: int = 12
     # Rough token budget placeholder; real budgeting can be added later.
     max_tool_calls: int = 24
+    # History pruning: keep last N user turns (each may contain multiple steps)
+    keep_last_user_turns: int = 6
 
 
 @dataclass
