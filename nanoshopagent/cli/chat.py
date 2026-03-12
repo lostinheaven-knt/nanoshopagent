@@ -5,6 +5,11 @@ from __future__ import annotations
 Recommended:
     python -m nanoshopagent.cli.chat
 
+Supports both single-line and multi-line input:
+- Type your request and press Enter twice (blank line) to submit.
+- Or end multi-line input with a line containing only `///`.
+- Commands: /quit, /exit
+
 If you insist on running as a script from this directory (python chat.py), we
 patch sys.path so that `import nanoshopagent` resolves.
 """
@@ -21,6 +26,45 @@ from nanoshopagent.core.tool_selection import ToolSelector
 from nanoshopagent.executors.llm_executor import LLMToolExecutor
 from nanoshopagent.tools.registry import load_org_tools_registry
 from nanoshopagent.utils.env_load import load_env_file
+
+
+def _read_user_message() -> str | None:
+    """Read either a single-line or multi-line user message.
+
+    - Returns None to indicate quit.
+    """
+
+    buf: list[str] = []
+    while True:
+        try:
+            line = input("\n你> ")
+        except (EOFError, KeyboardInterrupt):
+            return None
+
+        s = line.strip("\n")
+        s_stripped = s.strip()
+
+        # commands only when not in the middle of multi-line input
+        if not buf and s_stripped.lower() in ("/quit", "/exit", "quit", "exit"):
+            return None
+
+        # multi-line submit marker
+        if s_stripped == "///":
+            break
+
+        # blank line: if we have content, submit; else keep waiting
+        if s_stripped == "":
+            if buf:
+                break
+            continue
+
+        buf.append(s)
+
+        # Single-line convenience: if only one line so far and user didn't indicate multi-line,
+        # let them submit by just pressing Enter on next blank line.
+
+    msg = "\n".join(buf).strip()
+    return msg if msg else ""
 
 
 def main() -> None:
@@ -45,17 +89,16 @@ def main() -> None:
     )
 
     print("NanoShopAgent interactive. /quit to exit")
+    print("(多行输入：空行提交；或输入 /// 提交)")
+
     while True:
-        try:
-            q = input("\n你> ").strip()
-        except (EOFError, KeyboardInterrupt):
+        q = _read_user_message()
+        if q is None:
             break
         if not q:
             continue
-        if q.lower() in ("/quit", "/exit"):
-            break
         out = agent.run(q)
-        print("\n助理>", out)
+        print(out)
 
 
 if __name__ == "__main__":
