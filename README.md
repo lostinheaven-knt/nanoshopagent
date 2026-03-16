@@ -29,8 +29,8 @@ python -m nanoshopagent.cli.chat
 
 ## References
 
-- ReAct / Plan-Act-Observe agent loop（general pattern）
-- This repo is a compact engineering template for a tool-using agent in an e-commerce SaaS setting.
+- DeepSeek API Docs — 思考模式（thinking_mode）
+  - https://api-docs.deepseek.com/zh-cn/guides/thinking_mode
 
 ## License
 
